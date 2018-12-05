@@ -2,12 +2,11 @@
 
 name: StatsD Advanced
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Send metrics to StatsD with more flexible options
 description: |
-  Log [metrics](#metrics) for a Service, Route (or the deprecated API entity)
-  to a StatsD server.
+  Log [metrics](#metrics) for a Service, Route and/or Consumer to a StatsD server.
   It can also be used to log metrics on [Collectd](https://collectd.org/)
   daemon by enabling its [StatsD
   plugin](https://collectd.org/wiki/index.php/Plugin:StatsD).
@@ -26,7 +25,6 @@ kong_version_compatibility:
 
 params:
   name: statsd-advanced
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -97,9 +95,9 @@ Plugin can be configured with any combination of [Metrics](#metrics), with each 
 
 Field         | description                                             | allowed values
 ---           | ---                                                     | ---
-`name`          | StatsD metric's name                                  | [Metrics](#metrics)          
+`name`          | StatsD metric's name                                  | [Metrics](#metrics)
 `stat_type`     | determines what sort of event the metric represents   | `gauge`, `timer`, `counter`, `histogram`, `meter` and `set`|
-`sample_rate`<br>*conditional*   | sampling rate                        | `number`                 
+`sample_rate`<br>*conditional*   | sampling rate                        | `number`
 `customer_identifier`<br>*conditional* | authenticated user detail       | `consumer_id`, `custom_id`, `username`
 `service_identifier`<br>*conditional* | Service detail       | `service_id`, `service_name`, `service_host`, `service_name_or_host`
 

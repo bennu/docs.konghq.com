@@ -2,7 +2,7 @@
 
 name: OpenID Connect
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Integrate Kong with a third-party OpenID Connect 1.0 provider
 description: |
@@ -102,7 +102,7 @@ description: |
   [salesforce]: https://developer.salesforce.com/page/Inside_OpenID_Connect_on_Force.com
   [yahoo]: https://developer.yahoo.com/oauth2/guide/openid_connect/
 
-  Once applied, any user with a valid credential can access the Service/API.
+  Once applied, any user with a valid credential can access the Service.
   To restrict usage to only some of the authenticated users, also add the
   [ACL](/plugins/acl/) plugin (not covered here) and create whitelist or
   blacklist groups of users.
@@ -161,29 +161,30 @@ that is enhanced with OpenID Connect features (such as standardized security
 feature, and automatic discovery). Client credentials are easier to revoke than
 say password credentials without affecting too many things.
 
-#### Protecting Interactive Browser based API / Web Site Access
+
+#### Protecting Interactive Browser based Access / Web Site Access
 
 The best method to use here is to use OpenID Connect Authentication using
 *authorization code** flow. Kong sets up a session with the browser. After
 initial authentication the browser will send the cookie automatically —
-even when making API requests using JavaScript. With authorization code
+even when making requests to your Service using JavaScript. With authorization code
 flow you can usually utilize stronger authentication methods such as
 two-factor authentication on your identity provider.
 
-#### Protecting Access to APIs from 1st Party Client
+#### Protecting Access from 1st Party Client
 
 Here you can use OAuth 2.0 **password grant** that is enhanced with OpenID
 Connect features.
 
-#### Protecting Access to APIs with Stateless JWT Tokens
+#### Protecting Access with Stateless JWT Tokens
 
 When you have JWT (or JWS to be more specific) available for your client,
 that is possibly issued directly from the identity provider (e.g. by using
-implicit flow), and want you to use that token to access API protected by
+implicit flow), and want you to use that token to access a Service protected by
 Kong, you should use a plugin that provides you OpenID Connect aware
 stateless verification.
 
-#### Accessing APIs from Basic Authentication Aware Client
+#### Accessing Services from Basic Authentication Aware Client
 
 Basic authentication is supported in many 3rd party clients. One such client
 is Microsoft Excel. The `openid-connect` plugin allows you to supply username
@@ -368,7 +369,7 @@ Parameter ¹                          | Description
 `cache_token_exchange`               | Enables of disables caching of token exchange results.
 `cache_tokens`                       | Enables of disables caching of token endpoint request results.
 `cache_user_info`                    | Enables of disables caching of user info request results.
-`hide_credentials`                   | An optional boolean value telling the plugin to hide the credential to the upstream API server. It will be removed by Kong before proxying the request.
+`hide_credentials`                   | An optional boolean value telling the plugin to hide the credential to the upstream server. It will be removed by Kong before proxying the request.
 `http_version`                       | The HTTP version to use between Kong and OP.
 `ssl_verify`                         | Whether or not should Kong verify SSL Certificates when communicating to OP.
 `timeout`                            | The timeout value (in seconds) that is used for the Network IO.
@@ -627,19 +628,19 @@ on the selected `client`.
 
 Instead of responding with HTTP status code of 403, with this parameter
 you can instead send 302 redirect. Nice to have if you are trying to
-protect web sites (instead of say individual APIs) with this plugin.
+protect web sites (instead of say individual Services) with this plugin.
 
 ##### config.unauthorized_redirect_uri
 
 Instead of responding with HTTP status code of 401, with this parameter
 you can instead send 302 redirect. Nice to have if you are trying to
-protect web sites (instead of say individual APIs) with this plugin.
+protect web sites (instead of say individual Services) with this plugin.
 
 ##### config.unexpected_redirect_uri
 
 Instead of responding with HTTP status code of 500, with this parameter
 you can instead send 302 redirect. Nice to have if you are trying to
-protect web sites (instead of say individual APIs) with this plugin.
+protect web sites (instead of say individual Services) with this plugin.
 
 ##### config.forbidden_destroy_session
 
@@ -802,7 +803,7 @@ This config parameter works in both **AND** / **OR** cases.
 ##### config.domains
 
 With this config parameter you may specify the domains that are allowed
-to use the API. The token's `hd` claim (hosted domain) is verified
+to use the Service. The token's `hd` claim (hosted domain) is verified
 against the `config.domains`.
 
 Default | Required
@@ -817,7 +818,7 @@ Default | Required
 ##### config.max_age
 
 This configuration parameter is used to configure `auth_time` claim
-verification. With this parameter you may restrict the use of the API
+verification. With this parameter you may restrict the use of the Service
 with too old id tokens. The `max_age` is specified in seconds.
 
 **Note:** `config.leeway` may affect the calculation as well.
@@ -995,7 +996,7 @@ This is not a standard OpenID Connect feature but it is added here
 for added verification of a JWT value token (your identity provider
 or additional service should issue the cookie, and that cookie
 should be HTTP only and sent to Kong (as well) when accessing
-upstream API service).
+upstream Service).
 
 This parameter is only used when authenticating with stateless
 JWT bearer tokens (for other authentication methods we currently
@@ -1594,7 +1595,7 @@ You can turn off caching of user info request with this parameter.
 ##### config.hide_credentials
 
 An optional boolean value telling the plugin to hide the credential to
-the upstream API server. It will be removed by Kong before proxying
+the upstream server. It will be removed by Kong before proxying
 the request.
 
 ##### config.http_version
@@ -1720,65 +1721,74 @@ that this usage example is for testing purposes and that you should
 not send confidential information to `httpbin.org` that is used here
 for illustrative purposes.
 
-##### 1. Creating the API
+##### 1. Creating the Service & Route
 
-To create an API we execute the following command:
+To create a Service we execute the following command:
 
 ```bash
-$ http post :8001/apis                          \
-    name=openid-connect-demo                    \
-    uris=/                                      \
-    upstream_url=http://httpbin.org/anything -v
+$ http post :8001/services              \
+    name=openid-connect-demo            \
+    url=http://httpbin.org/anything -v
 ```
-```http
-POST /apis HTTP/1.1
-Accept: application/json, */*
-Accept-Encoding: gzip, deflate
-Connection: keep-alive
-Content-Length: 91
-Content-Type: application/json
-Host: localhost:8001
-User-Agent: HTTPie/0.9.9
-```
+
 ```json
 {
+    "connect_timeout": 60000,
+    "created_at": 1543935061,
+    "host": "httpbin.org",
+    "id": "07696a98-b8ef-4624-8239-ecb3606ddbac"
     "name": "openid-connect-demo",
-    "upstream_url": "http://httpbin.org/anything",
-    "uris": "/"
-}
-```
-```http
-HTTP/1.1 201 Created
-Access-Control-Allow-Origin: *
-Connection: keep-alive
-Content-Type: application/json; charset=utf-8
-Date: Mon, 14 Aug 2017 17:09:43 GMT
-Server: kong/0.10.3
-Transfer-Encoding: chunked
-```
-```json
-{
-    "created_at": 1502730583000,
-    "http_if_terminated": false,
-    "https_only": false,
-    "id": "f5331dd8-4dc8-4272-8537-199598e660ad",
-    "name": "openid-connect-demo",
-    "preserve_host": false,
+    "path": "/anything",
+    "port": 80,
+    "protocol": "http",
+    "read_timeout": 60000,
     "retries": 5,
-    "strip_uri": true,
-    "upstream_connect_timeout": 60000,
-    "upstream_read_timeout": 60000,
-    "upstream_send_timeout": 60000,
-    "upstream_url": "http://httpbin.org/anything",
-    "uris": [
-        "/"
-    ]
+    "updated_at": 1543935061,
+    "write_timeout": 60000
 }
 ```
 
-##### 2. Checking the API
+And to create a route associated to it:
 
-Check that the API works by issuing the following command:
+```bash
+$ http post :8001/services/openid-connect-demo/routes paths:='["/"]' -v
+```
+
+```json
+{
+    "created_at": 1543935597,
+    "destinations": null,
+    "hosts": null,
+    "id": "f84b0aaf-1c38-47d4-857f-75cf87132a21",
+    "methods": null,
+    "name": null,
+    "paths": [
+        "/"
+    ],
+    "preserve_host": false,
+    "protocols": [
+        "http",
+        "https"
+    ],
+    "regex_priority": 0,
+    "service": {
+        "id": "07696a98-b8ef-4624-8239-ecb3606ddbac"
+    },
+    "snis": null,
+    "sources": null,
+    "strip_path": true,
+    "updated_at": 1543935597
+}
+```
+
+<<<<<<< HEAD
+##### 2. Checking the API
+=======
+
+#### 2. Checking the Route
+>>>>>>> 1e7db1830c... doc(plugins) remove api_id / API instances from docs
+
+Check that the Route works by issuing the following command:
 
 ```bash
 $ http :8000 -v
@@ -1832,24 +1842,24 @@ X-Processed-Time: 0.00134587287903
 
 ##### 3. Enabling the Plugin
 
-To enable `openid-connect` plugin for the API,
+To enable `openid-connect` plugin for the Service,
 execute the following command (on production you
 shouldn't disable SSL verification):
 
 ```bash
-$ http post :8001/apis/openid-connect-demo/plugins  \
-    name=openid-connect                             \
-    config.issuer=<ISSUER>                          \
-    config.client_id=<CLIENT_ID>                    \
-    config.client_secret=<CLIENT_SECRET>            \
-    config.redirect_uri=<REDIRECT_URI>              \
+$ http post :8001/services/openid-connect-demo/plugins  \
+    name=openid-connect                                 \
+    config.issuer=<ISSUER>                              \
+    config.client_id=<CLIENT_ID>                        \
+    config.client_secret=<CLIENT_SECRET>                \
+    config.redirect_uri=<REDIRECT_URI>                  \
     config.ssl_verify=false -v
 ```
 
 On successful call you will get output similar to this:
 
 ```http
-POST /apis/openid-connect-demo/plugins HTTP/1.1
+POST /services/openid-connect-demo/plugins HTTP/1.1
 Accept: application/json, */*
 Accept-Encoding: gzip, deflate
 Connection: keep-alive
@@ -1878,7 +1888,7 @@ Transfer-Encoding: chunked
 ```
 ```json
 {
-    "api_id": "f5331dd8-4dc8-4272-8537-199598e660ad",
+    "service_id": "f5331dd8-4dc8-4272-8537-199598e660ad",
     "config": {
         "auth_methods": [
             "password",
@@ -1932,7 +1942,12 @@ Transfer-Encoding: chunked
 }
 ```
 
+<<<<<<< HEAD
 ##### 4. Try the API
+=======
+
+#### 4. Try the Route again
+>>>>>>> 1e7db1830c... doc(plugins) remove api_id / API instances from docs
 
 ```bash
 $ http :8000 -v
@@ -1976,7 +1991,7 @@ see if you can go through the authorization code flow, and after that
 get an reply from httpbin.org. Please check that your redirect uri is
 correctly registered as the identity provider should redirect the
 browser back to Kong url where this plugin is enabled (it can be the same
-API or it can be different API).
+Route or it can be different Service/Route).
 
 You could also try another ways, like for example password grant
 (and please try other authentication methods as well):

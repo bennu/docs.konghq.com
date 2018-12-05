@@ -2,7 +2,7 @@
 
 name: LDAP Authentication Advanced
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Secure Kong clusters, routes and services with username and password protection
 description: |
@@ -22,7 +22,6 @@ kong_version_compatibility:
 
 params:
   name: ldap-auth-advanced
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -147,7 +146,6 @@ When a client has been authenticated, the plugin will append some headers to the
 * `X-Consumer-Custom-ID`, the `custom_id` of the 'anonymous' consumer (only if authentication failed and 'anonymous' was set)
 * `X-Consumer-Username`, the `username` of the 'anonymous' consumer (only if authentication failed and 'anonymous' was set)
 
-[api-object]: /latest/admin-api/#api-object
 [configuration]: /latest/configuration
 [consumer-object]: /latest/admin-api/#consumer-object
 [faq-authentication]: /about/faq/#how-can-i-add-an-authentication-layer-on-a-microservice/api?

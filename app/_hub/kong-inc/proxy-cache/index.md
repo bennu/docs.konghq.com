@@ -2,11 +2,11 @@
 
 name: Proxy Caching
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Cache and serve commonly requested responses in Kong
 description: |
-  This plugin provides a reverse proxy cache implementation for Kong. It caches response entities based on configurable response code and content type, as well as request method. It can cache per-Consumer or per-API. Cache entities are stored for a configurable period of time, after which subsequent requests to the same resource will re-fetch and re-store the resource. Cache entities can also be forcefully purged via the Admin API prior to their expiration time.
+  This plugin provides a reverse proxy cache implementation for Kong. It caches response entities based on configurable response code and content type, as well as request method. It can cache per-Consumer or per-Service. Cache entities are stored for a configurable period of time, after which subsequent requests to the same resource will re-fetch and re-store the resource. Cache entities can also be forcefully purged via the Admin API prior to their expiration time.
 
 enterprise: true
 type: plugin
@@ -22,7 +22,6 @@ kong_version_compatibility:
 
 params:
   name: proxy-cache
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -145,7 +144,7 @@ params:
 
 ### Cache Key
 
-Kong keys each cache elements based on the request method, the full client request (e.g., the request path and query parameters), and the UUID of either the API or Consumer associated with the request. This also implies that caches are distinct between APIs and/or Consumers. Currently the cache key format is hard-coded and cannot be adjusted. Internally, cache keys are represented as a hexadecimal-encoded MD5 sum of the concatenation of the constituent parts. This is calculated as follows:
+Kong keys each cache elements based on the request method, the full client request (e.g., the request path and query parameters), and the UUID of either the Service or Consumer associated with the request. This also implies that caches are distinct between APIs and/or Consumers. Currently the cache key format is hard-coded and cannot be adjusted. Internally, cache keys are represented as a hexadecimal-encoded MD5 sum of the concatenation of the constituent parts. This is calculated as follows:
 
 ```
 key = md5(UUID | method | request)

@@ -2,11 +2,11 @@
 
 name: Canary Release
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Slowly roll out software changes to a subset of users
 description: |
-  Reduce the risk of introducing a new software version in production by slowly rolling out the change to a small subset of users. This plugin also enables roll back to your original upstream service, or shift all traffic to the new version.
+  Reduce the risk of introducing a new software version in production by slowly rolling out the change to a small subset of users. This plugin also enables roll back to your original upstream Service, or shift all traffic to the new version.
 
   * [Detailed documentation for the EE Canary Release Plugin](/enterprise/latest/plugins/canary-release/)
 
@@ -24,7 +24,6 @@ kong_version_compatibility:
 
 params:
   name: canary
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -82,7 +81,7 @@ params:
 
 ### Usage
 
-The plugin will route traffic to 2 different upstream services, referred to as A and B. The location of service A will be defined by the `upstream_url` property of the api the plugin is configured on. The location of service B is defined by the `config.upstream_host` or `config.upstream_uri` as configured on the plugin.
+The plugin will route traffic to 2 different upstream services, referred to as A and B. The location of Service A will be defined by the `url` property of the Service the plugin is configured on. The location of Service B is defined by the `config.upstream_host` or `config.upstream_uri` as configured on the plugin.
 
 There are 2 modes of operation:
 
@@ -107,7 +106,7 @@ Once the canary is complete, either going to 100% for a percent-based canary, or
 
 This takes 2 steps:
 
-1. Update location A to point to location B. This can be done by a PATCH request on the API where the `upstream_url` property is updated to the url as specified by `config.upstream_host` or `config.upstream_uri` (or location B).
+1. Update location A to point to location B. This can be done by a PATCH request on the Service where the `upstream_url` property is updated to the url as specified by `config.upstream_host` or `config.upstream_uri` (or location B).
 2. Since now the location A and B are the same, the canary plugin can now be removed from the system with a `DELETE` request.
 
 If the canary was not complete yet, then executing those steps prematurely, will instantly switch 100% of traffic to the new location (B).

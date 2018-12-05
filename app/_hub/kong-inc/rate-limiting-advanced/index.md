@@ -2,7 +2,7 @@
 
 name: Rate Limiting Advanced
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Upgrades Kong Rate Limiting with more flexibility and higher performance
 description: |
@@ -22,7 +22,6 @@ kong_version_compatibility:
 
 params:
   name: rate-limiting-advanced
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -137,7 +136,7 @@ params:
 An arbitrary number of limits/window sizes can be applied per plugin instance. This allows users to create multiple rate limiting windows (e.g., rate limit per minute and per hour, and/or per any arbitrary window size); because of limitation with Kong's plugin configuration interface, each *nth* limit will apply to each *nth* window size. For example:
 
 ```bash
-$ curl -i -X POST http://kong:8001/apis/{api}/plugins \
+$ curl -i -X POST http://kong:8001/services/{service}/plugins \
   --data name=rate-limiting-advanced \
   --data config.limit=10,100 \
   --data config.window_size=60,3600 \

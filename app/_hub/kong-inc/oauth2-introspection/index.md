@@ -2,7 +2,7 @@
 
 name: OAuth 2.0 Introspection
 publisher: Kong Inc.
-version: 0.33-x
+version: 0.34-x
 
 desc: Integrate Kong with a third-party OAuth 2.0 Authorization Server
 description: |
@@ -26,7 +26,6 @@ kong_version_compatibility:
 
 params:
   name: oauth2-introspection
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
@@ -60,7 +59,7 @@ params:
       default:
       value_in_examples:
       description: |
-        An optional boolean value telling the plugin to hide the credential to the upstream API server. It will be removed by Kong before proxying the request.
+        An optional boolean value telling the plugin to hide the credential to the upstream server. It will be removed by Kong before proxying the request.
     - name: timeout
       required: false
       default: 10000
@@ -97,7 +96,7 @@ To associate the introspection response resolution to a Kong Consumer, you will 
 
 ### Upstream Headers
 
-When a client has been authenticated, the plugin will append some headers to the request before proxying it to the upstream API/Microservice, so that you can identify the consumer in your code:
+When a client has been authenticated, the plugin will append some headers to the request before proxying it to the upstream Service, so that you can identify the consumer in your code:
 
 - `X-Consumer-ID`, the ID of the Consumer on Kong (if matched)
 - `X-Consumer-Custom-ID`, the custom_id of the Consumer (if matched and if existing)

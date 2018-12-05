@@ -1,6 +1,7 @@
 ---
 name: Rate Limiting
 publisher: Kong Inc.
+version: 1.0.0
 
 desc: Rate-limit how many HTTP requests a developer can make
 description: |
@@ -42,7 +43,6 @@ kong_version_compatibility:
 
 params:
   name: rate-limiting
-  api_id: true
   service_id: true
   route_id: true
   consumer_id: true
